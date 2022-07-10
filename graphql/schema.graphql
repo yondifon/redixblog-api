@@ -1,0 +1,54 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+
+type Post @node {
+    "The id of the post."
+    id: ID! @globalId
+    "The title of the post."
+    title: String!
+    "The body of the post."
+    body: String!
+    "The image of the post."
+    image: String
+    "The views of the posts"
+    views: Int!
+    "The author of the post."
+    author: Author! @belongsto
+    "The published date and time."
+    publishedAt: DateTime @rename(attribute: "created_at") 
+}
+
+type Page @node {
+    "The id of the post."
+    id: ID! @globalId
+    "The title of the post."
+    title: String!
+    "The body of the post."
+    body: String!
+    "The image of the post."
+    image: String
+    "The views of the posts"
+    summary: String
+}
+
+
+type Author @node @model(class: "\\App\\Models\\User") {
+    "The id of the author."
+    id: ID! @globalId
+    "The name of the author."
+    name: String!
+    "The author's posts."
+    posts: [Post] @hasMany
+}
+
+type Query {
+    "Fetch all posts."
+    posts: [Post] @paginate
+    "Most read Post"
+    popularPost: Post @first(scopes:["popular"])
+    "Get recent Post."
+    latestPost: Post @first(scopes:["recent"])
+    "Get recent page."
+    latestPage: Page @first(scopes:["recent"])
+}
